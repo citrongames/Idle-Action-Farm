@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Field
+  - Wheat
+  - Block
+  - Sell
   layers:
   - Default
   - TransparentFX
@@ -13,12 +17,12 @@ TagManager:
   - UI
   - Player_Col
   - Barn_Col
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Field_Col
+  - Wheat_Col
+  - Weapon_Col
+  - Pickable_Col
+  - Cut_Col
+  - Floor_Col
   - 
   - 
   - 

@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: GameData
   m_EditorClassIdentifier: 
   _coins: 0
+  _wheatValue: 15
+  _maxStacked: 40

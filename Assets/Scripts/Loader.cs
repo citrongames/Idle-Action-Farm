@@ -10,10 +10,13 @@ public class Loader : MonoBehaviour
     void Awake()
     {
         Application.targetFrameRate = _refreshRate;
+    }
+
+    private void Start() 
+    {
         if (_levelIndex > 0)
             StartCoroutine(LoadLevel(_levelIndex));
     }
-
     IEnumerator LoadLevel(int levelIndex)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelIndex);

@@ -11,6 +11,8 @@ public class LevelManager : MonoBehaviour
 {
     [SerializeField] private GameData _gameData;
     [SerializeField] private TextMeshProUGUI _coinsTMP;
+    [SerializeField] private TextMeshProUGUI _wheatTMP;
+    [SerializeField] private GameObject _coinImg;
     [SerializeField] private List<GameObject> _disableIngame;
     private LevelStateEnum _levelState;
     private Joystick _joystick;
@@ -19,11 +21,16 @@ public class LevelManager : MonoBehaviour
 
     void Awake()
     {
+        _gameData.Wheat = 0;
+        _gameData.Coins = 0;
         _levelState = LevelStateEnum.Ingame;
         _inputSystem = new InputSystem();
         _coinsTMP.text = _gameData.Coins.ToString();
+        _wheatTMP.text = _gameData.Wheat.ToString("00") + "/" + _gameData.MaxStacked.ToString();
         _joystick = new Joystick();
         _player = GameObject.Find("Player").GetComponent<Player>();
+        _player.GameData = _gameData;
+        _player.LevelManager = this.GetComponent<LevelManager>();
     }
 
     void Update()
@@ -43,6 +50,13 @@ public class LevelManager : MonoBehaviour
                 }
                 break;
             case LevelStateEnum.Ingame:
+                if (Input.GetKeyDown("s"))
+                {
+                    Debug.Log("test");
+                    RectTransform img = Instantiate(_coinImg, _coinsTMP.transform.parent).GetComponent<RectTransform>();
+                    Debug.Log(img.name);
+                    img.GetComponent<Coin>().Move(Camera.main.WorldToScreenPoint(_player.gameObject.transform.position));
+                }
                 if (_inputSystem.TouchInfo.Phase == TouchPhase.Began)
                 {
                     _joystick.ShowJoystick(true, _inputSystem.TouchInfo.StartPos);
@@ -86,7 +100,22 @@ public class LevelManager : MonoBehaviour
 
     public void AddCoins(int value)
     {
-        _gameData.Coins += value;
+        _gameData.Coins += (value * _gameData.WheatValue);
+        if (_gameData.Coins > 9999) _gameData.Coins = 9999;
+        _coinsTMP.text = _gameData.Coins.ToString();
+
+        
+    }
+
+    public void AddWheat(int value)
+    {
+        _gameData.Wheat += value;
+        _wheatTMP.text = _gameData.Wheat.ToString("00") + "/" + _gameData.MaxStacked.ToString();
+
+        if (value < 0)
+        {
+            AddCoins(value * -1);
+        }
     }
 
 }

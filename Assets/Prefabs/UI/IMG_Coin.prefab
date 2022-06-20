@@ -50,9 +50,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cbc2726e19148b42956fb405e6e5e12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _moveSpeed: 1.5
   _scaleSpeed: 1
   _minScale: {x: 0.5, y: 0.5, z: 0}
   _maxScale: {x: 1.2, y: 1.2, z: 0}
+  _levelManager: {fileID: 6056628184844040392, guid: f901fad7cddc3fa418e70c5d23ba5517, type: 3}
 --- !u!222 &367882974227891624
 CanvasRenderer:
   m_ObjectHideFlags: 0

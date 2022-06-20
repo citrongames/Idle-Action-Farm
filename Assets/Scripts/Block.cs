@@ -35,7 +35,7 @@ public class Block : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(DestroyOnTime(_destroyTime));
+        if (_isDestroy) StartCoroutine(DestroyOnTime(_destroyTime));
     }
 
     public void Stack(Transform position, int blockOrder)
@@ -54,13 +54,13 @@ public class Block : MonoBehaviour
 
     public void Unstack(Transform position)
     {
+        _isDestroy = true;
         _isMoving = true;
         _startPoint = transform;
         _endPoint = position;
         transform.SetParent(_endPoint.parent);
         _offset = Vector3.zero;
         _tParam = 0;
-        _isDestroy = true;
         GetComponentInChildren<MeshRenderer>().sharedMaterial = _origMaterial;
     }
 
@@ -83,7 +83,8 @@ public class Block : MonoBehaviour
     IEnumerator DestroyOnTime(float time)
     {
         yield return new WaitForSeconds(time);
-
+        
+        //if (_endPoint != null) _levelManager.SpawnCoin(_endPoint.position);
         if (_isDestroy) Destroy(this.gameObject);
     }
 

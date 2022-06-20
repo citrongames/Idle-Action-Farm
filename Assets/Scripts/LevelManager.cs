@@ -13,7 +13,10 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _coinsTMP;
     [SerializeField] private TextMeshProUGUI _wheatTMP;
     [SerializeField] private GameObject _coinImg;
+    [SerializeField] private float _txtScaleTime;
+    [SerializeField] private Vector3 _txtScaleMax;
     [SerializeField] private List<GameObject> _disableIngame;
+    [SerializeField] private List<GameObject> _enableIngame;
     private LevelStateEnum _levelState;
     private Joystick _joystick;
     private InputSystem _inputSystem;
@@ -23,7 +26,7 @@ public class LevelManager : MonoBehaviour
     {
         _gameData.Wheat = 0;
         _gameData.Coins = 0;
-        _levelState = LevelStateEnum.Ingame;
+        _levelState = LevelStateEnum.WaitingTap;
         _inputSystem = new InputSystem();
         _coinsTMP.text = _gameData.Coins.ToString();
         _wheatTMP.text = _gameData.Wheat.ToString("00") + "/" + _gameData.MaxStacked.ToString();
@@ -50,13 +53,6 @@ public class LevelManager : MonoBehaviour
                 }
                 break;
             case LevelStateEnum.Ingame:
-                if (Input.GetKeyDown("s"))
-                {
-                    Debug.Log("test");
-                    RectTransform img = Instantiate(_coinImg, _coinsTMP.transform.parent).GetComponent<RectTransform>();
-                    Debug.Log(img.name);
-                    img.GetComponent<Coin>().Move(Camera.main.WorldToScreenPoint(_player.gameObject.transform.position));
-                }
                 if (_inputSystem.TouchInfo.Phase == TouchPhase.Began)
                 {
                     _joystick.ShowJoystick(true, _inputSystem.TouchInfo.StartPos);
@@ -98,24 +94,36 @@ public class LevelManager : MonoBehaviour
         _levelState = newLevelState;
     }
 
+    public void SpawnCoin(Vector3 startPosition)
+    {
+        GameObject coin = Instantiate(_coinImg, _coinsTMP.transform.parent);
+        coin.GetComponent<Coin>().Move(Camera.main.WorldToScreenPoint(startPosition));
+    }
     public void AddCoins(int value)
     {
         _gameData.Coins += (value * _gameData.WheatValue);
         if (_gameData.Coins > 9999) _gameData.Coins = 9999;
-        _coinsTMP.text = _gameData.Coins.ToString();
-
-        
+        UpdateTXT(_gameData.Coins.ToString(), _coinsTMP);
     }
 
     public void AddWheat(int value)
     {
         _gameData.Wheat += value;
-        _wheatTMP.text = _gameData.Wheat.ToString("00") + "/" + _gameData.MaxStacked.ToString();
-
-        if (value < 0)
-        {
-            AddCoins(value * -1);
-        }
+        UpdateTXT(_gameData.Wheat.ToString("00") + "/" + _gameData.MaxStacked.ToString(), _wheatTMP);
     }
 
+    private void UpdateTXT(string value, TextMeshProUGUI txtObj)
+    {
+        txtObj.text = value;
+        StartCoroutine(ScaleTXT(_txtScaleTime, txtObj));
+    }
+
+    IEnumerator ScaleTXT(float time, TextMeshProUGUI txtObj)
+    {
+        txtObj.transform.localScale = _txtScaleMax;
+
+        yield return new WaitForSeconds(time);
+
+        txtObj.transform.localScale = new Vector3(1f, 1f, 1f);
+    }
 }

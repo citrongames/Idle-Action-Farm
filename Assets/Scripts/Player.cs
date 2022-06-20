@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _turnSpeed;
     [SerializeField] private float _sellTime;
+    [SerializeField] private float _coinTime;
     [SerializeField] private GameObject _weaponAttack;
     [SerializeField] private GameObject _weaponIdle;
     [SerializeField] private Transform _stackBlocksPoint;
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour
     private const float _delta = 0.001f;
     private PlayerState _state;
     private bool _sellBlocks;
+    private int _coinsToSpawn = 0;
     private GameData _gameData;
     public GameData GameData
     {
@@ -151,8 +153,7 @@ public class Player : MonoBehaviour
             _levelManager.AddWheat(1);
             _stackedBlocks.Push(block.transform);
             block.GetComponent<Block>().Stack(_stackBlocksPoint, _stackedBlocks.Count);
-            float newCamreaDistance = _stackedBlocks.Count / _cameraLimitDistance + _cameraStep;
-            if (newCamreaDistance > _cameraLimitDistance) _cameraSettings.m_CameraDistance = newCamreaDistance;
+            SetCameraDistance(_stackedBlocks.Count);
         }
         else
         {
@@ -168,15 +169,15 @@ public class Player : MonoBehaviour
 
     IEnumerator SellBlock(float time, Transform block)
     {
+        _coinsToSpawn = 0;
         while (_sellBlocks)
         {
             if (_stackedBlocks.Count > 0)
             {
+                _coinsToSpawn++;
                 _levelManager.AddWheat(-1);
                 _stackedBlocks.Pop().GetComponent<Block>().Unstack(block);
-                float newCamreaDistance = _stackedBlocks.Count / _cameraLimitDistance + _cameraStep;
-                if (newCamreaDistance > _cameraLimitDistance) _cameraSettings.m_CameraDistance = newCamreaDistance;
-                else _cameraSettings.m_CameraDistance = _cameraLimitDistance;
+                SetCameraDistance(_stackedBlocks.Count);
             }
             else
             {
@@ -184,5 +185,28 @@ public class Player : MonoBehaviour
             }
             yield return new WaitForSeconds(time);
         }
+        if (_coinsToSpawn > 0)
+        {
+            StartCoroutine(SpawnCoins(_coinTime, block.position));
+        }
+    }
+
+    IEnumerator SpawnCoins(float time, Vector3 startPoint)
+    {
+        yield return new WaitForSeconds(time);
+
+        while (_coinsToSpawn > 0)
+        {
+            _coinsToSpawn--;
+            _levelManager.SpawnCoin(startPoint);
+            yield return new WaitForSeconds(time);
+        }
+        
+    }
+    private void SetCameraDistance(int blocksCount)
+    {
+        float newCameraDistance = blocksCount / _cameraLimitDistance + _cameraStep;
+        if (newCameraDistance > _cameraLimitDistance) _cameraSettings.m_CameraDistance = newCameraDistance;
+        else _cameraSettings.m_CameraDistance = _cameraLimitDistance;
     }
 }

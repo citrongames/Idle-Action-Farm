@@ -1262,7 +1262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 3
   _turnSpeed: 15
-  _sellTime: 0
+  _sellTime: 0.1
+  _coinTime: 0
   _weaponAttack: {fileID: 8262260124672744564}
   _weaponIdle: {fileID: 1044550040828040972}
   _stackBlocksPoint: {fileID: 5268926719529624899}
